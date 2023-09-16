@@ -1,0 +1,61 @@
+{
+  "night": "2023-09-16",
+  "dome": {
+    "open": "auto",
+    "close": "2023-09-17T00:00:00Z"
+  },
+  "actions": [
+    {
+      "type": "SkyFlats",
+      "evening": true,
+      "pipeline": {
+        "prefix": "evening-flat"
+      }
+    },
+    {
+      "type": "AutoFocus",
+      "start": "2023-09-17T21:00:00"
+      "ra": 200.0,
+      "dec": 50.0,
+      "camera": {
+        "exposure": 5
+      }
+    },
+    {
+      "type": "ObserveImageSequence",
+      "ra": 210.8025,
+      "dec": 54.34917,
+      "blind_offset_dra": 0.0,
+      "blind_offset_ddec": 1.0,
+      "pipeline": {
+        "object": "Pinwheel Galaxy (M101)",
+        "prefix": "m101"
+      },
+      "sequence": [
+        {
+          "count": 5,
+          "filter": "B",
+          "exposure": 10        
+        },
+        {
+          "count": 5,
+          "filter": "V",
+          "exposure": 10        
+        },
+        {
+          "count": 5,
+          "filter": "R",
+          "exposure": 10        
+        },
+        {
+          "count": 5,
+          "filter": "I",
+          "exposure": 10        
+        }
+      ]
+    },
+    {
+      "type": "ShutdownCamera"
+    }
+  ]
+}

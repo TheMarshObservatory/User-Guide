@@ -8,6 +8,7 @@
 \usepackage{hyperref}
 \usepackage{listings}
 \usepackage{parskip}
+\usepackage{xcolor}
 
 \definecolor{linkColour}{rgb}{0,0.3,0}
 \definecolor{urlColour}{rgb}{0,0.3,0}
@@ -24,6 +25,39 @@
   urlcolor=urlColour,
   citecolor=citeColour
 }
+
+
+\colorlet{punct}{red!60!black}
+\definecolor{background}{HTML}{EEEEEE}
+\definecolor{delim}{RGB}{20,105,176}
+\colorlet{numb}{magenta!60!black}
+
+\lstdefinelanguage{json}{
+    basicstyle=\scriptsize\ttfamily,
+    showstringspaces=false,
+    breaklines=true,
+    frame=lines,
+    backgroundcolor=\color{background},
+    literate=
+     *{0}{{{\color{numb}0}}}{1}
+      {1}{{{\color{numb}1}}}{1}
+      {2}{{{\color{numb}2}}}{1}
+      {3}{{{\color{numb}3}}}{1}
+      {4}{{{\color{numb}4}}}{1}
+      {5}{{{\color{numb}5}}}{1}
+      {6}{{{\color{numb}6}}}{1}
+      {7}{{{\color{numb}7}}}{1}
+      {8}{{{\color{numb}8}}}{1}
+      {9}{{{\color{numb}9}}}{1}
+      {:}{{{\color{punct}{:}}}}{1}
+      {,}{{{\color{punct}{,}}}}{1}
+      {\{}{{{\color{delim}{\{}}}}{1}
+      {\}}{{{\color{delim}{\}}}}}{1}
+      {[}{{{\color{delim}{[}}}}{1}
+      {]}{{{\color{delim}{]}}}}{1},
+}
+
+\lstset{columns=fixed, basicstyle=\ttfamily, basewidth=0.5em}
 
 %% Definitions
 
@@ -56,9 +90,9 @@ The telescope mount is the fork structure that holds the Optical Tube Assembly (
 
 \subsection{Focuser}
 
-The focuser is mounted on the back of the OTA, and provides very fine computer control to move the camera in and out to precisely align the camera detector with the image plane of the telescope optics. This alignment changes due to the thermal expansion and contraction of the metal telescope tube, which changes the separation of the primary and secondary mirrors when the temperature changes.
+The focuser is mounted on the back of the OTA, and provides very fine computer control to move the camera in and out to precisely align the camera detector with the image plane of the telescope optics. This alignment changes due to the thermal expansion and contraction of the metal telescope tube, which changes the separation of the primary and secondary mirrors when the temperature changes. The effect is small in absolute terms (fractions of a millimetre), but has a large impact on the focus of the camera.
 
-This effect is small in absolute terms (fractions of a millimetre), but has a large impact on the focus of the camera.
+The focuser is controlled using the \texttt{focus} command.
 
 \subsection{Filter Wheel}
 
@@ -66,7 +100,7 @@ Most astronomical cameras are monochrome (``black and white'') because they are 
 
 Colour images are instead created by placing a piece of coloured glass (called a ``filter'') in front of the camera sensor. Single images can be taken each with a different filters, and combined into a single colour image using software.
 
-The \emph{filter wheel} device sits between the focuser and camera, and contains several different filters that can be selected under computer control.
+The \emph{filter wheel} device sits between the focuser and camera, and contains several different filters that can be selected under computer control. It is controlled using the \texttt{filter} command.
 
 \subsection{Camera}
 
@@ -77,6 +111,8 @@ Traditionally, astronomical cameras generally used sensors based on the Charge C
 By $\sim$2015, advancements in the CMOS technology meant that they were becoming more and more suitable for astronomical use, and had several advantages that made them \emph{more} desirable than CCDs for particular types of observation.
 
 The camera at Windmill Hill contains a 60MP CMOS sensor that is cooled to 0$\circ$C to reduce the impact of thermal noise (called \emph{dark current}) on the images. It contains a very accurate clock, synchronised with the GPS satellite network, to measure the starting and ending times of each image to an accuracy of $\sim$1 millisecond.
+
+The camera is controlled using the \texttt{cam} command. Images are then processed by the \emph{data pipeline} before they are saved to disk. The data pipeline, controlled with the \texttt{pipeline} command, adds various information to the image headers and can perform various analysis (including measuring focus and \emph{world coordinate system} calibration) before archiving images to disk. Beware that \textbf{images are discarded unless archiving is enabled in the pipeline}.
 
 \subsection{Dome}
 
@@ -111,7 +147,36 @@ The TCS runs the Rocky Linux operating system, with the Gnome desktop environmen
 
 \subsection{Starting Up}\label{sec:startup}
 
-The dome must be powered on and off manually, using a switch on the wall of the telescope room (see Figure \ref{fig:domepower}. Turn it anti-clockwise to the horizontal position to enable power, and clockwise to the vertical position to disable power.
+Start by powering on and initialising the focuser, filter wheel, and camera. Type the following commands into the terminal window (one line at a time, pressing enter after each):
+\begin{lstlisting}[language=sh]
+  power switch focuser on
+  focuser init
+  power switch filter on
+  filter init
+  power switch cam on
+  cam init  
+\end{lstlisting}
+
+After a few seconds, the status of the three devices on the web dashboard should change from \texttt{\color{red}POWER OFF} to \texttt{IDLE}. The camera will automatically start cooling the sensor to $0^\circ$C, which can also be monitored on the dashboard.
+
+Next, power on and initialise the telescope:
+\begin{lstlisting}[language=sh]
+  power switch tel on
+  tel init
+\end{lstlisting}
+
+The \texttt{init} command will take 1-2 minutes to complete, during which time you will not be able to enter commands in the terminal. You will know it has completed once control returns on the terminal.
+
+Now, go into the dome and check that the telescope is aligned with the zero markers, and shown in Figure \ref{fig:telescopemarkers}. If it is not, proceed to Appendix \ref{app:zerotelescope} before continuing. This will be necessary if the telescope was powered off without first (or too quickly after) issuing the \texttt{tel kill} command (see Section \ref{sec:shutdown}).
+
+\begin{figure}
+    \centering
+    %\includegraphics[width=16cm]{figures/telescopemarkers.jpg}
+    \caption{The telescope should be aligned with the zero markers after initialising. The telescope should be re-zeroed if the hour-angle axis is offset by more than a degree or two.}
+    \label{fig:telescopemarkers}
+\end{figure}
+
+The dome must be powered on manually, using the switch on the wall of the telescope room (see Figure \ref{fig:domepower}. Turn it anti-clockwise to the horizontal position to enable power, then return to the control computer.
 
 \begin{figure}
     \centering
@@ -120,7 +185,143 @@ The dome must be powered on and off manually, using a switch on the wall of the 
     \label{fig:domepower}
 \end{figure}
 
+The dome must be \emph{homed} before it can be used; this procedure calibrates the rotation so it can accurately track the telescope. Issue the following commands to initialise and home the dome:
+\begin{lstlisting}[language=sh]
+  dome init
+  dome home
+\end{lstlisting}
+
+Homing will take a couple of minutes, and will return control to the terminal once it has completed.
+
+The system is now ready for observing.
+
 \subsection{Manual Observing}
+TODO: Expand wording
+
+e.g. to observe Messier Object 101, the Pinwheel Galaxy:
+
+\begin{lstlisting}[language=sh]
+  tel track 14:03:12.6 54:20:57
+  cam exposure 10
+  filter set V
+  pipeline type SCIENCE
+  pipeline object M101
+  pipeline preview
+  pipeline archive enable
+  cam start 5
+\end{lstlisting}
+
+Wait for camera status to be \texttt{IDLE}
+\begin{lstlisting}[language=sh]
+  filter set R
+  cam start 5
+\end{lstlisting}
+
+Repeat for other filters...
+
+Manual offsetting...
+\begin{lstlisting}[language=sh]
+  
+  pipeline wcs enable
+  tel offset 0:0:30 0:5:0
+  cam start 1
+  tel offset ...
+  pipeline wcs disable
+\end{lstlisting}
+
+WCS calculations may fail if the image contains a complicated object, such as a large galaxy or cluster. In these cases, use the \emph{blind offset} technique. Command the telescope to a nearby position (e.g. 1 degree north) that is more amenable for the WCS solutions, and then once the telescope is precisely aligned with that field offset back (e.g. 1 degree south) to the target field. The telescope can make very accurate relative movements over a small separation, even if the overall abosolute positioning is poor.
+
+Manual focusing...
+
+\begin{lstlisting}[language=sh]
+  pipeline hfd enable
+  focus offset 2000
+  cam start 1
+  focus offset 500
+  cam start 1
+  ...
+  pipeline hfd disable
+\end{lstlisting}
+
+\textbf{DO NOT USE \texttt{dome open} to open the dome manually!}
+
+TODO: Add an \texttt{ops dome open} command to opsd.
+
+
+Manual dark frames/biases...
+
+\begin{lstlisting}[language=sh]
+  filter set block
+  cam exposure 0
+  pipeline type BIAS
+  pipeline prefix bias
+  pipeline archive enable
+  cam start 21
+\end{lstlisting}
+\begin{lstlisting}[language=sh]
+  cam exposure 10
+  pipeline type DARK
+  pipeline prefix dark-10s
+  cam start 21
+\end{lstlisting}
 
 \subsection{Robotic Observing}\label{sec:roboticobserving}
+TODO: Expand wording
+
+\begin{lstlisting}[language=sh]
+  ops validate myobservingplan.json
+  ops tel auto
+  ops dome auto
+  ops schedule myobservingplan.json
+\end{lstlisting}
+
+Figure \ref{fig:exampleplan} demonstrates an example observing plan that automatically opens the dome at sunset, acquires sky flat calibration frames, focuses the telescope, and then acquires a sequence of images. The dome will automatically close at midnight (or if the weather becomes unsafe), and the camera will automatically warm and power off once observations are complete.
+
+\begin{figure}
+    \centering
+    \lstinputlisting[language=json]{figures/example_plan.json}
+    \caption{An example robotic observing plan.}
+    \label{fig:exampleplan}
+\end{figure}
+
+
+\subsection{Shutting down}\label{sec:shutdown}
+TODO: Expand wording and figures around the following procedure:
+
+\begin{lstlisting}[language=sh]
+  cam temperature warm
+\end{lstlisting}
+
+Wait for status to report \texttt{\color{red}WARM} on the dashboard.
+
+\begin{lstlisting}[language=sh]
+  cam kill
+  power switch cam off
+  filter kill
+  power switch filter off
+  focus kill
+  power switch focus off
+  tel park
+  tel kill
+  power switch tel off
+\end{lstlisting}
+
+Wait for dome to stop moving and ensure it is closed
+\begin{lstlisting}[language=sh]
+  dome kill
+\end{lstlisting}
+
+and power off by rotating the switch on the wall clockwise into the vertical position.
+
+\newpage
+\appendix 
+
+\section{Re-zeroing telescope axes}\label{app:zerotelescope}
+TODO: Expand wording and figures around the following procedure:
+\begin{itemize}
+    \item Manually move off the limit if security system was tripped
+    \item Make sure telescope has been initialised
+    \item Use hand panel to position telescope on zero markers
+    \item \texttt{tel zero} and wait for control to return to the terminal
+\end{itemize}
 \end{document}
