@@ -3,7 +3,7 @@
 \usepackage[pdftex]{color} 
 \usepackage[pdftex]{geometry}
 \geometry{hscale=0.78,vscale=0.8}
-\usepackage{fancyheadings}
+\usepackage{fancyhdr}
 \usepackage{graphicx}
 \usepackage{hyperref}
 \usepackage{listings}
@@ -127,7 +127,6 @@ The camera at Windmill Hill contains a 60MP CMOS sensor that is cooled to 0$^\ci
 
 The camera is controlled using the \texttt{cam} command. Images are then processed by the \emph{data pipeline} before they are saved to disk. The data pipeline, controlled with the \texttt{pipeline} command, adds various information to the image headers and can perform various analysis (including measuring focus and \emph{world coordinate system} calibration) before archiving images to disk. Beware that \textbf{images are discarded unless archiving is enabled in the pipeline}.
 
-\subsection{Dome}
 
 The dome protects the telescope from the sun and weather during the day, and shelters it from the wind (which can cause image shaking) when observing. It contains a shutter that can be opened through computer control, and automatically rotates to allow the telescope to observe through the opening.
 
@@ -156,7 +155,7 @@ It is recommended to use two full screen windows, with one monitor displaying th
 
 The Control page will ask for a password to connect to the TCS; enter \textbf{obs@who} to continue. If presented with a login interface, select the \textbf{observer} user and enter the same password again.
 
-The TCS runs the Rocky Linux operating system, with the Gnome desktop environment. Commands to operate the observatory are entered in a terminal window; if a terminal is not already present on the desktop, press the \textbf{Activities} button at the top-left of the screen, and then the \textbf{Terminal} icon in the dock at the bottom of the Activities overview.
+The TCS runs the Rocky Linux operating system, with the Gnome desktop environment. Commands to operate the observatory are entered in a terminal window; if a terminal is not already present on the desktop, press the \textbf{Activities} button at the top-left of the screen, and then the \textbf{Terminal} icon in the dock at the bottom of the screen.
 
 \subsection{Starting Up}\label{sec:startup}
 
@@ -189,12 +188,12 @@ Now, go into the dome and check that the telescope is aligned with the zero mark
     \label{fig:telescopemarkers}
 \end{figure}
 
-The dome must be powered on manually, using the switch on the wall of the telescope room (see Figure \ref{fig:domepower}. Turn it anti-clockwise to the horizontal position to enable power, then return to the control computer.
+The dome must be powered on manually, using the switch on the wall of the telescope room (see Figure \ref{fig:domepower}. Turn it clockwise to the vertical position to enable power, then return to the control computer.
 
 \begin{figure}
     \centering
     \includegraphics[width=5cm]{figures/domepower.jpg}
-    \caption{The switch in the telescope room to turn on the Dome.}
+    \caption{The switch in the telescope room to turn on the Dome. It is shown in the off position.}
     \label{fig:domepower}
 \end{figure}
 
@@ -324,7 +323,7 @@ Wait for dome to stop moving and ensure it is closed
   dome kill
 \end{lstlisting}
 
-and power off by rotating the switch on the wall clockwise into the vertical position.
+and power off by rotating the switch on the wall anti-clockwise into the horizontal position.
 
 \appendix 
 \newpage
