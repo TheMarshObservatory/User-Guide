@@ -9,6 +9,7 @@
 \usepackage{listings}
 \usepackage{parskip}
 \usepackage{xcolor}
+\usepackage{rotating}
 
 \definecolor{linkColour}{rgb}{0,0.3,0}
 \definecolor{urlColour}{rgb}{0,0.3,0}
@@ -122,7 +123,7 @@ Traditionally, astronomical cameras generally used sensors based on the Charge C
 
 By $\sim$2015, advancements in the CMOS technology meant that they were becoming more and more suitable for astronomical use, and had several advantages that made them \emph{more} desirable than CCDs for particular types of observation.
 
-The camera at Windmill Hill contains a 60MP CMOS sensor that is cooled to 0$\circ$C to reduce the impact of thermal noise (called \emph{dark current}) on the images. It contains a very accurate clock, synchronised with the GPS satellite network, to measure the starting and ending times of each image to an accuracy of $\sim$1 millisecond.
+The camera at Windmill Hill contains a 60MP CMOS sensor that is cooled to 0$^\circ$C to reduce the impact of thermal noise (called \emph{dark current}) on the images. It contains a very accurate clock, synchronised with the GPS satellite network, to measure the starting and ending times of each image to an accuracy of $\sim$1 millisecond.
 
 The camera is controlled using the \texttt{cam} command. Images are then processed by the \emph{data pipeline} before they are saved to disk. The data pipeline, controlled with the \texttt{pipeline} command, adds various information to the image headers and can perform various analysis (including measuring focus and \emph{world coordinate system} calibration) before archiving images to disk. Beware that \textbf{images are discarded unless archiving is enabled in the pipeline}.
 
@@ -325,10 +326,10 @@ Wait for dome to stop moving and ensure it is closed
 
 and power off by rotating the switch on the wall clockwise into the vertical position.
 
-\newpage
 \appendix 
-
+\newpage
 \section{Re-zeroing telescope axes}\label{app:zerotelescope}
+
 TODO: Expand wording and figures around the following procedure:
 \begin{itemize}
     \item Manually move off the limit if security system was tripped
@@ -336,4 +337,40 @@ TODO: Expand wording and figures around the following procedure:
     \item Use hand panel to position telescope on zero markers
     \item \texttt{tel zero} and wait for control to return to the terminal
 \end{itemize}
+
+\newpage
+\section{Technical Information}\label{app:technical}
+
+The observatory is controlled using the \href{https://github.com/rockit-astro}{Robotic Observatory Control Kit} software platform. Table \ref{tab:rockit-modules} provides a listing of the modules used.
+\begin{sidewaystable}
+    \centering
+    \begin{tabular}{c|c|c|c}
+        Module & Purpose & Computer & \texttt{systemd} service name(s)  \\
+        \hline
+        \href{https://github.com/rockit-astro/ashdomed}{\texttt{ashdomed}} & Dome control & DCS & \texttt{ashdomed@warwick}\\
+        \href{https://github.com/rockit-astro/atlasd}{\texttt{atlasd}} & Focus control & TCS & \texttt{focusd@warwick}\\
+        \href{https://github.com/rockit-astro/camd-qhy}{\texttt{camd-qhy}}, \href{https://github.com/rockit-astro/camd-client}{\texttt{camd-client}} & Camera control & TCS & \texttt{qhy\_camd@warwick}\\
+        \href{https://github.com/rockit-astro/cfwd}{\texttt{cfwd}} & Filter wheel control & TCS & \texttt{cfwd@warwick}\\
+        \href{https://github.com/rockit-astro/cloudwatcherd}{\texttt{cloudwatcherd}} & Sky temperature & TCS & \texttt{cloudwatcherd@warwick}\\
+        \href{https://github.com/rockit-astro/diskspaced}{\texttt{diskspaced}} & Disk space monitor & TCS & \texttt{diskspaced@warwick}\\
+        \href{https://github.com/rockit-astro/environmentd}{\texttt{environmentd}} & Environment aggregation & TCS & \texttt{environmentd@warwick}\\
+        \href{https://github.com/rockit-astro/ephemd}{\texttt{ephemd}} & Sun/moon information & TCS & \texttt{ephemd@warwick}\\
+        \href{https://github.com/rockit-astro/meaded}{\texttt{meaded}} & Telescope control & TCS & \texttt{meaded@warwick}\\
+        \href{https://github.com/rockit-astro/obslogd}{\texttt{obslogd}} & Dashboard log database & TCS & \texttt{obslogd@warwick}\\
+        \href{https://github.com/rockit-astro/opsd}{\texttt{opsd}} & Robotic operations control & TCS & \texttt{opsd@warwick}\\
+        \href{https://github.com/rockit-astro/pipelined}{\texttt{pipelined}} & Camera data pipeline & TCS & \texttt{pipelined@warwick}, \texttt{pipeline\_workerd@warwick}\\
+        \href{https://github.com/rockit-astro/powerd}{\texttt{powerd}} & Power control & TCS & \texttt{powerd@warwick}\\
+        \href{https://github.com/rockit-astro/rhusbd}{\texttt{rhusbd}} & Dome temp/humidity & DCS & \texttt{rhusbd@warwick}\\
+        \href{https://github.com/rockit-astro/vaisalad}{\texttt{vaisalad}} & Ext. weather & TCS & \texttt{vaisalad@warwick}\\
+        \href{https://github.com/rockit-astro/weatherlog}{\texttt{weatherlog}} & Dashboard weather database & TCS & \texttt{update-weather-database}\\
+        \href{https://github.com/rockit-astro/dashboard-warwick}{\texttt{dashboard-warwick}} & Web dashboard & TCS & \texttt{dashboard}\\
+    \end{tabular}
+    \caption{List of rockit modules used at Windmill Hill Observatory.}
+    \label{tab:rockit-modules}
+\end{sidewaystable}
+
+The remote-desktop \textbf{observer} user does not have admin permissions, so maintenance and debug tasks should be undertaken by logging into a physical session on the TCS computer as the \textbf{ops} user. The two accounts can be quickly distinguished by the desktop background colour -- the observer user is purple, and the ops user is grey. The password for the \textbf{ops} user is listed on the \href{https://github.com/WarwickWindmillHill/docs/wiki/Network-configuration}{Network Configuration wiki page}.
+
+TODO: software updates, systemd commands
+
 \end{document}
