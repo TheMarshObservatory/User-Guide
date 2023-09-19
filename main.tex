@@ -88,7 +88,7 @@ The telescope and observatory consist of several sub-systems that work together 
 
 \begin{figure}
     \centering
-    %\includegraphics[width=5cm]{figures/subsystems.svg}
+    \includegraphics[width=8cm]{figures/subsystems.pdf}
     \caption{Schematic overview of the Windmill Hill Observatory systems. (1) power control, (2) telescope mount, (3) focuser, (4) filter wheel, (5) camera, (6) dome, (7) environment monitoring}
     \label{fig:subsystems}
 \end{figure}
@@ -127,6 +127,7 @@ The camera at Windmill Hill contains a 60MP CMOS sensor that is cooled to 0$^\ci
 
 The camera is controlled using the \texttt{cam} command. Images are then processed by the \emph{data pipeline} before they are saved to disk. The data pipeline, controlled with the \texttt{pipeline} command, adds various information to the image headers and can perform various analysis (including measuring focus and \emph{world coordinate system} calibration) before archiving images to disk. Beware that \textbf{images are discarded unless archiving is enabled in the pipeline}.
 
+\subsection{Dome}
 
 The dome protects the telescope from the sun and weather during the day, and shelters it from the wind (which can cause image shaking) when observing. It contains a shutter that can be opened through computer control, and automatically rotates to allow the telescope to observe through the opening.
 
@@ -370,6 +371,14 @@ The observatory is controlled using the \href{https://github.com/rockit-astro}{R
 
 The remote-desktop \textbf{observer} user does not have admin permissions, so maintenance and debug tasks should be undertaken by logging into a physical session on the TCS computer as the \textbf{ops} user. The two accounts can be quickly distinguished by the desktop background colour -- the observer user is purple, and the ops user is grey. The password for the \textbf{ops} user is listed on the \href{https://github.com/WarwickWindmillHill/docs/wiki/Network-configuration}{Network Configuration wiki page}.
 
+
+Standard \texttt{systemd} commands work, for example to view the standard output of \texttt{opsd} between 01:00 -- 03:30 on the morning of 2023-09-18, use: 
+
+{\footnotesize
+\begin{lstlisting}[language=sh]
+journalctl -fu opsd@warwick --since "2023-09-18 01:00:00" --until "2023-09-18 03:30:00"
+\end{lstlisting}
+}
 TODO: software updates, systemd commands
 
 \end{document}
