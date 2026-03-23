@@ -2,21 +2,25 @@
 
 \usepackage[pdftex]{color} 
 \usepackage[pdftex]{geometry}
+\usepackage[utf8]{inputenc}
 \geometry{hscale=0.78,vscale=0.8}
+\usepackage{amssymb}
 \usepackage{fancyhdr}
 \usepackage{graphicx}
 \usepackage{hyperref}
-\usepackage{listings}
+\usepackage{listingsutf8}
 \usepackage{parskip}
 \usepackage{xcolor}
 \usepackage{rotating}
+\usepackage{menukeys}
+\usepackage[outline]{contour}
 
 \definecolor{linkColour}{rgb}{0,0.3,0}
 \definecolor{urlColour}{rgb}{0,0.3,0}
 \definecolor{citeColour}{rgb}{0,0.3,0}
 
 \hypersetup{
-  pdftitle={Windmill Hill Observing Guide},
+  pdftitle={The Marsh Observatory Guide},
   pdfauthor={Paul Chote, Warwick},
 %  pdfpagemode=none,
   pdfborder={0 0 0},
@@ -72,7 +76,22 @@
     morecomment=[l]//,
 }
 
-\lstset{columns=fixed, basicstyle=\ttfamily, basewidth=0.5em}
+\lstdefinelanguage{commands}{
+    language=sh,
+    columns=fixed,
+    basicstyle=\ttfamily\footnotesize,
+    basewidth=0.475em,
+    frame=lines,
+    commentstyle=\color{teal}\ttfamily,
+}
+
+
+\protected\def\dg{\ensuremath{^\circ}}
+\DeclareUnicodeCharacter{05A8}{\dg}
+
+\lstset{inputencoding=utf8, extendedchars=true, columns=fixed, basicstyle=\ttfamily, basewidth=0.5em, literate= {°}{\dg}1
+}
+
 
 \definecolor{highlightColour}{rgb}{0.7,0,0}
 
@@ -82,6 +101,31 @@
 \pagestyle{fancy}
 \begin{document}
 
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.3]{figures/telescope3.jpg}
+%    \caption{Observers at the PX451 lab with TMO telescope}
+    \label{fig:telescope}
+\end{figure}
+
+\begin{center}
+\Large
+University of Warwick\\
+The Marsh Observatory User Guide\\[5mm]
+Staff contacts: Dr Daniel Bayliss, Dr Paul Chote,\\ Dr James McCormac\\ [1mm]
+Version date: \today
+\end{center}
+
+
+
+
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
 \section{Introduction}
 
 The telescope and observatory consist of several sub-systems that work together to deliver images of the sky. They are displayed graphically in Figure \ref{fig:subsystems}, and described in detail below.
@@ -89,17 +133,17 @@ The telescope and observatory consist of several sub-systems that work together 
 \begin{figure}
     \centering
     \includegraphics[width=8cm]{figures/subsystems.pdf}
-    \caption{Schematic overview of the Windmill Hill Observatory systems. (1) power control, (2) telescope mount, (3) focuser, (4) filter wheel, (5) camera, (6) dome, (7) environment monitoring}
+    \caption{Schematic overview of the TMO systems. (1) power control, (2) telescope mount, (3) focuser, (4) filter wheel, (5) camera, (6) dome, (7) environment monitoring}
     \label{fig:subsystems}
 \end{figure}
 
-\subsection{Power Control}
+\subsection{Control Computer and Power}
 
-The equipment cabinet mounted on the back of the pier contains (among other things) a network-controllable power board. This is used to remotely power on and off the telescope and instrument components through computer control. This is done using the \texttt{power} command, which will be explained in Section \ref{sec:startup}.
+The equipment cabinet mounted on the back of the pier contains (among other things) the computer that controls the instrumentation and a network-controllable power board that allows the computer to remotely power on and off the telescope and instrument. The control computer is usually operated from the comfort of the control room using a remote connection. Power is managed automatically by the observatory control systems, and devices should not be powered on or off manually.
 
 \subsection{Telescope Mount}
 
-The telescope mount is the fork structure that holds the Optical Tube Assembly (OTA) - the actual telescope part of the telescope - and provides computer control to point the telescope at the desired target and to automatically track the sidereal motion of the stars. It can be controlled using the \texttt{tel} command.
+The telescope mount is the fork structure that holds the Optical Tube Assembly (OTA) -- the actual telescope part of the telescope -- and provides computer control to point the telescope at the desired target and to automatically track the sidereal motion of the stars. It can be controlled using the \texttt{tel} command.
 
 \subsection{Focuser}
 
@@ -113,7 +157,14 @@ Most astronomical cameras are monochrome (``black and white'') because they are 
 
 Colour images are instead created by placing a piece of coloured glass (called a ``filter'') in front of the camera sensor. Single images can be taken each with a different filters, and combined into a single colour image using software.
 
-The \emph{filter wheel} device sits between the focuser and camera, and contains several different filters that can be selected under computer control. It is controlled using the \texttt{filter} command.
+The \emph{filter wheel} device sits between the focuser and camera, and contains several different filters that can be selected under computer control (see Figure~\ref{fig:bandpasses}). It is controlled using the \texttt{filter} command.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{figures/bandpass.png}
+    \caption{The filter transmission bandpasses of the Bessel filters installed in the filter wheel. The Quantum Efficiency of the QHY600M Pro camera is also shown. The total sensitivity of the system is given by the product of the camera and filter bandpasses with that of the telescope optics (roughly flat over the visible wavelength range) and the atmosphere.}
+    \label{fig:bandpasses}
+\end{figure}
 
 \subsection{Camera}
 
@@ -123,7 +174,7 @@ Traditionally, astronomical cameras generally used sensors based on the Charge C
 
 By $\sim$2015, advancements in the CMOS technology meant that they were becoming more and more suitable for astronomical use, and had several advantages that made them \emph{more} desirable than CCDs for particular types of observation.
 
-The camera at Windmill Hill contains a 60MP CMOS sensor that is cooled to 0$^\circ$C to reduce the impact of thermal noise (called \emph{dark current}) on the images. It contains a very accurate clock, synchronised with the GPS satellite network, to measure the starting and ending times of each image to an accuracy of $\sim$1 millisecond.
+The camera at TMO contains a 60MP CMOS sensor that is cooled to 0$^\circ$C to reduce the impact of thermal noise (called \emph{dark current}) on the images. It contains a very accurate clock, synchronised with the GPS satellite network, to measure the starting and ending times of each image to an accuracy of $\sim$1 millisecond.
 
 The camera is controlled using the \texttt{cam} command. Images are then processed by the \emph{data pipeline} before they are saved to disk. The data pipeline, controlled with the \texttt{pipeline} command, adds various information to the image headers and can perform various analysis (including measuring focus and \emph{world coordinate system} calibration) before archiving images to disk. Beware that \textbf{images are discarded unless archiving is enabled in the pipeline}.
 
@@ -131,65 +182,67 @@ The camera is controlled using the \texttt{cam} command. Images are then process
 
 The dome protects the telescope from the sun and weather during the day, and shelters it from the wind (which can cause image shaking) when observing. It contains a shutter that can be opened through computer control, and automatically rotates to allow the telescope to observe through the opening.
 
-It takes 2-3 minutes for the shutter to fully open or close, so be mindful of the weather before you consider opening. If it starts raining, things will get wet before it closes!
+It takes 2--3 minutes for the shutter to fully open or close, so be mindful of the weather before you consider opening. If it starts raining, things will get wet before it closes!
 
 \subsection{Environment Monitoring}
 
-A weather mast on the terrace contains a collection of sensors to measure the temperature, humidity, wind speed, cloud coverage, and whether or not it is raining. These measurements allow the dome, when operated robotically (see Section \ref{sec:roboticobserving}), to automatically close when conditions become unsafe.
+The regional weather conditions can be found on the \href{https://www.meteoblue.com/en/weather/week/coventry_united-kingdom_2652221}{Meteoblue website for Coventry}. The previous link gives a 7 day forecast with expected temperatures, rainfall and cloud cover. Meteoblue also provide an \href{https://www.meteoblue.com/en/weather/outdoorsports/seeing/coventry_united-kingdom_2652221}{Astronomical Seeing page for Coventry} that lists more detailed information about the height of the cloud layers and the seeing. Astronomical seeing is a measurement of the amount of blurring caused by turbulence in the Earth's atmosphere. The best observing sites (e.g. Chile, La Palma, Hawaii) have typical seeing values between $0.3-1.0$ arcseconds for a good night. On campus we will be lucky if the seeing is $<2$ arcsec on the best nights, and is more often $4 -- 6$ arcsec. Poor seeing increases the half-flux diameter of the stars on our images, spreading the light out and blending nearby stars together. As the star light is distributed over more pixels, the signal to noise ratio is decreased leading to poorer quality measurements. 
+
+The Observatory is protected by its own weather station which is positioned on the south end of the roof. This has sensors for wind speed/direction, temperature and humidity as well as temperature and humidity inside the dome. The Observatory Control Software uses measurements from the local weather station to enable observation.
+
+We apply the following safety limits to the weather conditions, all of which must have been true during the previous 20 minutes before opening the dome:
+
+\begin{itemize}
+    \item Not raining 
+    \item Humidity $<90$\%
+    \item Wind speed $<40$ km/h
+    \item Temperature $>-5^{\circ}$C and $>2.5^{\circ}$C above the dew point
+\end{itemize}
+
+There is a further instantaneous (the 20 minute rule does not apply) requirement that the sun is less than 20 degrees above the horizon so that it will be blocked by the lower shutter of the dome.
+
+The observatory control system will not allow the dome to be opened if these conditions are not met, and will automatically close the dome if the conditions become unsafe during observations.
+
+The status of the local conditions are displayed on the observatory control dashboard web page.
+
+
+\subsection{Lighting}
+The building has motion sensor lights that you will need to disable in order to have a dark environment if you want to do science quality observations.  It takes $\sim30$ minutes for the lights to turn off, so do this early. Procedure:
+\begin{itemize}
+    \item Open a browser on any computer and go to the \href{https://www.smartscan.lighting/en/login}{Thorlux lighting portal}.
+    \item Log in with the username \texttt{d.bayliss@warwick.ac.uk} and password \texttt{TMO4darkness}
+    \item Click on ``{\footnotesize UOW OBSERVATORY BUILDING}'', then ``{\footnotesize UOW OBSERVATORY BUILDING *}'', then ``{\footnotesize (5) GF \& ROOF}''
+    \item Click on the 9-square icon in the top right of the page, select ``settings'', then select ``{\footnotesize SMARTSCAN EXTERNAL CONTROL}''.
+    \item Use the 24\,h/7\,day calendar grid to schedule times for the lights to be off that suits your observing schedule.  At the end of the night please remove any scheduled blocks you entered to leave a blank calendar.
+    
+\end{itemize}
 
 \section{Operating the telescope}
 
-The Windmill Hill telescope is 100\% computer controlled - there is no eye piece, nor is it necessary to manually rotate or open the dome.
+The telescope is 100\% computer controlled - there is no eye piece, nor is it necessary to manually rotate or open the dome.
 
-The system is operated using a web browser, with the web dashboard (see Figure \ref{fig:dashboard}) providing an overview of the current status of all systems, and a remote desktop window into the telescope control computer (TCS).
+The system is operated via a remote desktop connection (RDC), with a web dashboard providing an overview of the current status of all systems.
 
-\begin{figure}
-    \centering
-    \includegraphics[width=16cm]{figures/dashboard.jpg}
-    \caption{The web dashboard interface allows a user to monitor the observatory status and command the telescope.}
-    \label{fig:dashboard}
-\end{figure}
+Log into the control room computer using your ITS account, and open a web browser window (Chrome or Firefox will behave better than Edge). Enter the address \url{http://172.19.0.160/} to access the dashboard.
 
-Log into the control room computer using your ITS account, and open a \emph{Google Chrome} web browser window. Enter the address \texttt{http://172.19.0.160/} to access the dashboard.
+To open the RDC to the telescope control computer (TCS):
+\begin{itemize}
+    \item In the search bar type ``remote desktop connection" and open the RDC application.
+    \item In the RDC application window click on ``Show Options''.
+    \item In the box labeled ``Computer" type in ``172.19.0.160'', and for ``Username'' type ``observer''.
+    \item Click ``Connect"
+    \item A warning box will appear. Click ``Yes''.
+    \item A grey box will appear with a password prompt.  The password is ``obs@tmo''.
+    \item A warning box about identity will appear.  Click ``Yes''.
+    \item You should now have a remote connection to the Telescope Control Computer.
+\end{itemize}
 
-It is recommended to use two full screen windows, with one monitor displaying the \emph{Status} page and the other the \emph{Control} page.
+It is recommended to use two full screen windows, with one monitor displaying the \emph{Status} page and the other the RDC window.
 
-The Control page will ask for a password to connect to the TCS; enter \textbf{obs@who} to continue. If presented with a login interface, select the \textbf{observer} user and enter the same password again.
-
-The TCS runs the Rocky Linux operating system, with the Gnome desktop environment. Commands to operate the observatory are entered in a terminal window; if a terminal is not already present on the desktop, press the \textbf{Activities} button at the top-left of the screen, and then the \textbf{Terminal} icon in the dock at the bottom of the screen.
-
+The TCS runs the Rocky Linux operating system, with the Gnome desktop environment. 
 \subsection{Starting Up}\label{sec:startup}
 
-Start by powering on and initialising the focuser, filter wheel, and camera. Type the following commands into the terminal window (one line at a time, pressing enter after each):
-\begin{lstlisting}[language=sh]
-  power switch focuser on
-  focuser init
-  power switch filter on
-  filter init
-  power switch cam on
-  cam init  
-\end{lstlisting}
-
-After a few seconds, the status of the three devices on the web dashboard should change from \texttt{\color{red}POWER OFF} to \texttt{IDLE}. The camera will automatically start cooling the sensor to $0^\circ$C, which can also be monitored on the dashboard.
-
-Next, power on and initialise the telescope:
-\begin{lstlisting}[language=sh]
-  power switch tel on
-  tel init
-\end{lstlisting}
-
-The \texttt{init} command will take 1-2 minutes to complete, during which time you will not be able to enter commands in the terminal. You will know it has completed once control returns on the terminal.
-
-Now, go into the dome and check that the telescope is aligned with the zero markers, and shown in Figure \ref{fig:telescopemarkers}. If it is not, proceed to Appendix \ref{app:zerotelescope} before continuing. This will be necessary if the telescope was powered off without first (or too quickly after) issuing the \texttt{tel kill} command (see Section \ref{sec:shutdown}).
-
-\begin{figure}
-    \centering
-    %\includegraphics[width=16cm]{figures/telescopemarkers.jpg}
-    \caption{The telescope should be aligned with the zero markers after initialising. The telescope should be re-zeroed if the hour-angle axis is offset by more than a degree or two.}
-    \label{fig:telescopemarkers}
-\end{figure}
-
-The dome must be powered on manually, using the switch on the wall of the telescope room (see Figure \ref{fig:domepower}. Turn it clockwise to the vertical position to enable power, then return to the control computer.
+Start by entering the telescope room and inspecting the area for anything out of the ordinary (e.g. ladders, loose cables, or mess on the floor). Check that the dome is powered on at its switch on the western wall (see Figure \ref{fig:domepower}). Before turning on the dome make sure there is nobody on the terrace. If there are people on the terrace please warn them the dome is about to move. Turn it clockwise to the vertical position to enable power, then return to the control computer.
 
 \begin{figure}
     \centering
@@ -198,174 +251,391 @@ The dome must be powered on manually, using the switch on the wall of the telesc
     \label{fig:domepower}
 \end{figure}
 
-The dome must be \emph{homed} before it can be used; this procedure calibrates the rotation so it can accurately track the telescope. Issue the following commands to initialise and home the dome:
-\begin{lstlisting}[language=sh]
-  dome init
-  dome home
-\end{lstlisting}
+Now execute the command sequence listed in Section~\ref{sec:setupcommands} below to power on the instrumentation and home the dome. This will take a few minutes to complete, during which time you will not be able to enter commands in the terminal. You will know it has completed once control returns on the terminal. The status of each device should update on the web dashboard within a few seconds of it being initialised. The camera will automatically start cooling the sensor to $0^\circ$C, which can also be monitored on the dashboard.
 
-Homing will take a couple of minutes, and will return control to the terminal once it has completed.
-
-The system is now ready for observing.
-
-\subsection{Manual Observing}
-TODO: Expand wording
-
-e.g. to observe Messier Object 101, the Pinwheel Galaxy:
-
-\begin{lstlisting}[language=sh]
-  tel track 14:03:12.6 54:20:57
-  cam exposure 10
-  filter set V
-  pipeline type SCIENCE
-  pipeline object M101
-  pipeline preview
-  pipeline archive enable
-  cam start 5
-\end{lstlisting}
-
-Wait for camera status to be \texttt{IDLE}
-\begin{lstlisting}[language=sh]
-  filter set R
-  cam start 5
-\end{lstlisting}
-
-Repeat for other filters...
-
-Manual offsetting...
-\begin{lstlisting}[language=sh]
-  
-  pipeline wcs enable
-  tel offset 0:0:30 0:5:0
-  cam start 1
-  tel offset ...
-  pipeline wcs disable
-\end{lstlisting}
-
-WCS calculations may fail if the image contains a complicated object, such as a large galaxy or cluster. In these cases, use the \emph{blind offset} technique. Command the telescope to a nearby position (e.g. 1 degree north) that is more amenable for the WCS solutions, and then once the telescope is precisely aligned with that field offset back (e.g. 1 degree south) to the target field. The telescope can make very accurate relative movements over a small separation, even if the overall abosolute positioning is poor.
-
-Manual focusing...
-
-\begin{lstlisting}[language=sh]
-  pipeline hfd enable
-  focus offset 2000
-  cam start 1
-  focus offset 500
-  cam start 1
-  ...
-  pipeline hfd disable
-\end{lstlisting}
-
-\textbf{DO NOT USE \texttt{dome open} to open the dome manually!}
-
-TODO: Add an \texttt{ops dome open} command to opsd.
-
-
-Manual dark frames/biases...
-
-\begin{lstlisting}[language=sh]
-  filter set block
-  cam exposure 0
-  pipeline type BIAS
-  pipeline prefix bias
-  pipeline archive enable
-  cam start 21
-\end{lstlisting}
-\begin{lstlisting}[language=sh]
-  cam exposure 10
-  pipeline type DARK
-  pipeline prefix dark-10s
-  cam start 21
-\end{lstlisting}
-
-\subsection{Robotic Observing}\label{sec:roboticobserving}
-TODO: Expand wording
-
-\begin{lstlisting}[language=sh]
-  ops validate myobservingplan.json
-  ops tel auto
-  ops dome auto
-  ops schedule myobservingplan.json
-\end{lstlisting}
-
-Figure \ref{fig:exampleplan} demonstrates an example observing plan that automatically opens the dome at sunset, acquires sky flat calibration frames, focuses the telescope, and then acquires a sequence of images. The dome will automatically close at midnight (or if the weather becomes unsafe), and the camera will automatically warm and power off once observations are complete.
+Now, go into the dome and check that the telescope is aligned with the zero markers, and shown in Figure \ref{fig:telescopemarkers}. If it is not, proceed to Section~\ref{sec:zerotelescope} before continuing. This will be necessary if the telescope was powered off incorrectly.
 
 \begin{figure}
     \centering
-    \lstinputlisting[language=json]{figures/example_plan.json}
-    \caption{An example robotic observing plan.}
-    \label{fig:exampleplan}
+    \includegraphics[width=0.45\textwidth]{figures/markers_ha.jpg}
+    \includegraphics[width=0.45\textwidth]{figures/markers_dec.jpg}
+    \caption{The telescope should be aligned with the zero markers after initialising. The telescope should be re-zeroed if the hour-angle axis is offset by more than a couple of degrees.}
+    \label{fig:telescopemarkers}
 \end{figure}
 
+The system is now ready for observing.
+\clearpage
+\pagebreak
+\subsection{Manual Observing}
 
-\subsection{Shutting down}\label{sec:shutdown}
-TODO: Expand wording and figures around the following procedure:
+The observatory is controlled using a command line interface. Commands to operate the observatory are entered in a terminal window; if a terminal is not already present on the desktop, press the \keys{\contourlength{2pt}$\ $\contour{black}{---}$\ $} button at the top-left of the screen, and then the \textbf{Terminal} icon in the dock at the bottom of the screen.
 
-\begin{lstlisting}[language=sh]
-  cam temperature warm
+Explanatory comments are given after the `\texttt{\color{teal}\#}' character, and should not be typed as part of the command. You can save time by typing the first letters in each command and pressing \keys{tab} to automatically complete the rest of the word.
+
+Each of the main command types (\texttt{tel}, \texttt{cam}, \texttt{focus}, \texttt{filter}, \texttt{pipeline}) can be called without arguments to print a list of the accepted commands:
+\\
+\begin{lstlisting}[language=commands]
+  pipeline # run without any arguments to print the command list
+
+  # command outputs:
+  usage: pipeline <command> [<args>]
+
+  general commands:
+     status       print a human-readable summary of the pipeline status
+     preview      open a ds9 window to preview acquired frames
+     reset        reset to the default pipeline configuration
+  output frame commands:
+     archive      enable or disable frame archiving
+     subdir       set archive subdirectory
+     prefix       set archive frame prefix
+     object       set metadata object name
+     type         set metadata frame type
+  reduction flags:
+     wcs          enable or disable WCS solutions
+     rotation     enable or disable field rotation preview
+     hfd          enable or disable half-flux diameter calculations
+     hfdgrid      enable or disable half-flux diameter grid preview
+     intstats     enable or disable intensity statistics
+     dashboard    enable or disable dashboard preview updates
 \end{lstlisting}
 
-Wait for status to report \texttt{\color{red}WARM} on the dashboard.
+Similarly, running a partial command will print the syntax expected for the command, using \texttt{<angle~brackets>} to denote values/options that you must provide, and \texttt{[square~brackets]} to denote optional values:
+\\
+\begin{lstlisting}[language=commands]
+  tel track # run a partial command to print the expected arguments
 
-\begin{lstlisting}[language=sh]
-  cam kill
-  power switch cam off
-  filter kill
-  power switch filter off
-  focus kill
-  power switch focus off
-  tel park
-  tel kill
-  power switch tel off
+  # command outputs:
+  usage: tel track <HH:MM:SS.S> <DD:MM:SS.S>
 \end{lstlisting}
 
-Wait for dome to stop moving and ensure it is closed
-\begin{lstlisting}[language=sh]
-  dome kill
+The most useful status outputs are displayed on the web dashboard, but it can sometimes be useful to run the \texttt{status} commands manually if you are waiting for something specific to occur - the web dashboard only updates a couple of times per minute:
+\\
+\begin{lstlisting}[language=commands]
+  cam status # report the current camera status
+
+  # command outputs:
+  Camera is IDLE
+  Temperature is 0°C (36% power, LOCKED)
+  Temperature set point is 0°C
+  Frame streaming is DISABLED
+  Exposure time is 1.000 s
+  Output window is [1:9600,1:6422]
+  Binning is 3x3 (sum)
+  Filter is BLOCK
 \end{lstlisting}
 
-and power off by rotating the switch on the wall anti-clockwise into the horizontal position.
+The following command blocks provide recipes for most common observing tasks.
 
-\appendix 
+\subsubsection{Instrument Setup}\label{sec:setupcommands}
+
+After switching the dome power on, the following commands will power-on and initialize the system for observing:
+\\
+\begin{lstlisting}[language=commands]
+  ops script startup # powers on and configures the instrument, telescope, dome, pipeline
+  pipeline preview # open a display window for live previews
+  ops dome auto # allows the dome to be controlled by the automated systems
+  ops dome open # only if the weather is safe!
+\end{lstlisting}
+
+The \texttt{ops script startup} command automates the procedure of powering on and initializing the individual hardware components. It is equivalent to the sequence:
+\\
+\begin{lstlisting}[language=commands]
+  pipeline reset # resets image processing and sets data directory to todays date
+  power status # lists the on/off status of the components
+  power switch tel on # powers on the telescope
+  power switch filter on # powers on the filter
+  power switch cam on # powers on the camera
+  power switch focus on # powers on the focus
+  tel init # initializes the telescope
+  filter init # initializes the filter
+  cam init # initializes the camera
+  focus init # initializes the focuser
+  dome init # initializes the dome
+  dome home # calibrates the dome orientation
+\end{lstlisting}
+
+\subsubsection{Calibration Images}
+To acquire 21 bias frames, run:
+\\
+\begin{lstlisting}[language=commands]
+  pipeline reset # reset image processing to defaults
+  pipeline type bias # set image type to simplify later analysis
+  pipeline prefix bias # sets the saved filenames to `bias-<filter>-<date>.fits'
+  pipeline archive enable # required for images to be saved!
+  filter set BLOCK # insert the blocking filter to reduce stray light
+  cam exposure 0 # bias exposures have 0 exposure time
+  cam start 21 # acquires 21 images
+\end{lstlisting}
+
+To acquire $21 \times 20$-second dark frames, run:
+\\
+\begin{lstlisting}[language=commands]
+  pipeline reset # reset image processing to defaults
+  pipeline type dark # set image type to simplify later analysis
+  pipeline prefix dark-20s # sets the saved filenames to `dark-20s-<filter>-<date>.fits'
+  pipeline archive enable # required for images to be saved!
+  filter set BLOCK # insert the blocking filter to reduce stray light
+  cam exposure 20 # set to match your longest science exposure
+  cam start 21 # acquires 21 images
+\end{lstlisting}
+
+Flat field images are acquired using an observation script that adjusts the exposure time in real-time based on the sky brightness. At sunset, open the dome and run:
+\\
+\begin{lstlisting}[language=commands]
+  ops tel auto # allows the telescope to be controlled by the automated systems
+  ops script run_skyflats # run the flat-field logic
+\end{lstlisting}
+
+The default configuration will attempt to acquire 21 images in each filter. Run \texttt{ops script run\_skyflats} to view the options if you would like to customize these:
+\\
+\begin{lstlisting}[language=commands]
+  ops script run_skyflats --help # print command help
+
+  # command outputs:
+  usage: ops script run_skyflats [-h] [--morning] [--count COUNT] [--prefix PREFIX]
+                                 [--filters {NONE,B,V...} [{NONE,B,V,R,I,BLOCK} ...]] 
+  
+  options:
+    -h, --help            show this help message and exit
+    --morning             schedule morning flats instead of evening flats
+    --filters {NONE,B,V,R,I,BLOCK} [{NONE,B,V,R,I,BLOCK} ...]
+                          filters to acquire flats with
+    --count COUNT         number of images to acquire in each filter
+    --prefix PREFIX       filename prefix for saved images
+\end{lstlisting}
+
+
+\subsubsection{Focusing}
+
+The focus is very sensitive to temperature changes: the metal body of the telescope contracts as it cools, which reduces the spacing between the camera and mirror. The focuser allows you to move the camera out to compensate for this shrinkage.
+
+The optimum focus position is measured by acquiring images over a range of focus positions and measuring the resulting half flux diameter (HFD) of the stellar profiles. This process is semi-automated using the \texttt{ops script run\_focus\_sweep} command:
+\\
+\begin{lstlisting}[language=commands]
+  ops script run_focus_sweep --help # print command help
+
+  # command outputs:
+  usage: ops script run_focus_sweep [-h] [--ra RA] [--dec DEC] [--filter {NONE,B,V,R,I,BLOCK}]
+                                    [--exposure EXPOSURE] [--samples SAMPLES]
+                                    min max step prefix
+  
+  positional arguments:
+    min                   minimum focus position to measure
+    max                   maximum focus position to measure
+    step                  focus steps between measurements
+    prefix                filename prefix for the saved images
+  
+  options:
+    -h, --help            show this help message and exit
+    --ra RA               target right ascension in h:m:s
+    --dec DEC             target declination in d:m:s
+    --filter {NONE,B,V,R,I,BLOCK}
+                          filter to use when focusing
+    --exposure EXPOSURE   camera exposure time
+    --samples SAMPLES     number of measurements to obtain at each focus step
+\end{lstlisting}
+
+You are required to provide the range of focus positions to sample, and also a filename prefix that is used when saving the focus images. You can use the same prefix for multiple focus runs -- for example, if your first focus sweep does not include the best focus position you can run a second to extend the range. However, because the optimum focus position moves based on the telescope temperature, you should change the filename prefix if repeating a focus sweep at a different dome temperature.
+
+You may optionally specify the filter to use for focusing, and change the exposure time or number of samples measured at each focus position. For example, to obtain a focus sweep using the V filter when it is relatively cold (which implies a large focuser offset) run:
+\\
+\begin{lstlisting}[language=commands]
+  ops script run_focus_sweep 65000 100000 2500 focus --filter V
+\end{lstlisting}
+
+You can inspect the results of the focus sweep to identify the optimum focus using the \texttt{ops script plot\_focus\_sweep} command, which takes the filename prefix as its argument.
+\\
+\begin{lstlisting}[language=commands]
+  ops script plot_focus_sweep focus
+\end{lstlisting}
+
+An example plot is shown in Figure \ref{fig:focusplot}. Focuser offsets smaller than 2000 steps rarely make any visible difference to the image quality, so it is sufficient to estimate the best focus to the nearest 1000 steps.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/focusplot.png}
+    \caption{A focus plot obtained using \texttt{ops script run\_focus\_sweep} and displayed using \texttt{ops script plot\_focus\_sweep}. The optimum focus can be seen to be 84000 steps.}
+    \label{fig:focusplot}
+\end{figure}
+
+\pagebreak
+\subsubsection{Science Images}
+
+Start by preparing the camera and image pipeline for your target of interest:
+\\
+\begin{lstlisting}[language=commands]
+  ops tel manual # ensures the telescope won't be controlled by the automated systems
+  pipeline reset # reset image processing to defaults
+  pipeline type science # set image type to simplify later analysis
+  pipeline prefix <target label> # sets the saved filenames to `<target label>-<filter>-<date>.fits'
+  pipeline object <target name> # sets the image target header to `<target name>'
+  pipeline wcs enable # calculate actual sky position of the image
+  pipeline hfd enable # calculate half-flux diameters to monitor focus
+  cam exposure 20 # set your desired exposure time
+  filter set R # set your desired filter
+  focus offset -500 # apply focus correction if filter has changed
+\end{lstlisting}
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|c r|} 
+ \hline
+ Filter & Offset\\[0.5ex] 
+ \hline\hline
+ NONE & 0\\
+ B & 18000\\
+ V & 19000\\
+ R & 18500\\
+ I & 19500\\
+ [1ex] 
+ \hline
+\end{tabular}
+
+\caption{Relative focus offsets for each filter. When changing filter, apply the difference between the new and old offsets to maintain the current focus}.
+\label{table:filter-focus-offsets}
+\end{table}
+
+Table~\ref{table:filter-focus-offsets} provides a list of relative focus offsets for each filter. Now, move the telescope to the target of interest:
+\\
+\begin{lstlisting}[language=commands]
+  tel track [HH:MM:SS] [DD:MM:SS] # move the telescope to the target location
+  cam start 1 # acquire a test image to check telescope pointing
+\end{lstlisting}
+
+The telescope moves to where it believes the target location is, but it often has a small positional error. Take a test image and compare the display and WCS coordinates in the pipeline preview window with your finding chart. 
+
+World coordinate solutions (WCS) equates the x and y pixel positions to the R.A. and Dec. coordinate system.  WCS calculations may fail if the image contains a complicated object, such as a large galaxy or cluster. In these cases, use the \emph{blind offset} technique. Command the telescope to a nearby position (e.g. 1 degree north) that is more amenable for the WCS solutions, and then once the telescope is precisely aligned with that field offset back (e.g. 1 degree south) to the target field. The telescope can make very accurate relative movements over a small separation, even if the overall absolute positioning is poor.
+
+If you need to adjust its position, use the following to nudge the telescope:
+\\
+\begin{lstlisting}[language=commands]
+  tel offset [HH:MM:SS] [DD:MM:SS] # apply RA and Dec offset to the current position
+  cam start 1 # acquire another test image 
+\end{lstlisting}
+
+Note - sometimes the dome position may not overlap with the telescope position, it may be offset a little bit. If this happens, restart the dome using the \texttt{dome home, dome kill} commands, power the telescope off with the wall switch inside the dome room (turn the switch to the left), wait 10-15 seconds before powering the dome back on with the same switch (turn the switch to the right), and running the \texttt{dome init, dome home} commands.
+
+Once you are happy with the telescope pointing, start your science exposures:
+
+\begin{lstlisting}[language=commands]
+  pipeline archive enable # required for images to be saved!
+  cam start 21 # acquire 21 science images
+\end{lstlisting}
+
+\subsubsection{Shutting Down}
+\\
+\begin{lstlisting}[language=commands]
+  ops script shutdown # closes dome, parks telescope, warms camera, powers off instrument
+                      # and switches telescope, dome control to manual
+\end{lstlisting}
+
+The \texttt{ops script shutdown} command automates the procedure for safely shutting down the individual hardware components. It is equivalent to the sequence:
+\\
+\begin{lstlisting}[language=commands]
+  ops tel stop # stop any active observing scripts
+  ops dome close # close the dome!
+  tel park stow # park the telescope and dome in their shutdown positions
+  cam temperature warm # warms the camera to avoid thermal shocks
+  cam status # wait for the camera to report WARM before proceeding
+  cam kill # shut down the camera
+  filter kill # shut down the filter wheel
+  focus kill # shut down the focuser
+  tel kill # shut down the telescope
+  # WAIT AT LEAST 30 SECONDS UNTIL THE TELESCOPE BEEPS
+  power switch cam off # powers camera off
+  power switch filter off # powers filter wheel off
+  power switch focus off # powers focus off
+  power switch tel off # powers telescope off
+\end{lstlisting}
+
+Now enter the telescope room, check for anything out of the ordinary, and power off the dome using the switch on the western wall.
+
+\subsection{Data Archiving}\label{sec:archive}
+Data can be copied to e.g. your One Drive account by copy/paste over RDC. Open a Files window and select Data in the sidebar. If you set the pipeline up correctly, the images will be saved on the TCS in the directory named after the night, such as \texttt{/data/20231114/}. Right click and Copy the directory, and then Paste into your One Drive folder on the Windows computer.
+
 \newpage
-\section{Re-zeroing telescope axes}\label{app:zerotelescope}
+\subsection{Automated Observing}
+\label{sec:auto}
+TCS commands can be run using a JSON script for automated operations. 
 
-TODO: Expand wording and figures around the following procedure:
-\begin{itemize}
-    \item Manually move off the limit if security system was tripped
-    \item Make sure telescope has been initialised
-    \item Use hand panel to position telescope on zero markers
-    \item \texttt{tel zero} and wait for control to return to the terminal
-\end{itemize}
+The JSON scripts must be written in the correct syntax, and saved to the TCS in the following directory:
+\begin{lstlisting}[language=sh]
+  name_dir
+\end{lstlisting}
 
-\newpage
+Examples of JSON scripts are set out in the Appendix~\ref{app:JSON}.
+
+To just a JSON file on the TCS use the following commands:
+\begin{lstlisting}[language=commands]
+  ops validate myobservingplan.json # checks myobservingplan.json for syntax errors
+  ops tel auto # allows the telescope to be controlled by the automated systems
+  ops dome auto # allows the dome to be controlled by the automated systems
+  ops schedule myobservingplan.json # issues the schedule to the telescope and dome
+\end{lstlisting}
+
+\subsubsection{Interrupting automated observing}
+Should you need to interrupt the automatic observing and take manual control over the telescope:
+
+\begin{lstlisting}[language=commands]
+  ops tel stop # cancels the current telescope action and clears the schedule
+  ops tel manual # ensures the telescope won't be controlled by the automated systems
+\end{lstlisting}
+
+\subsubsection{Resuming automated observing}
+If the telescope is in manual mode and you wish to resume the automated observing script then:
+\begin{lstlisting}[language=commands]
+  ops tel auto # allows the telescope to be controlled by the automated systems
+  ops schedule myobservingplan.json # issues the schedule to the telescope and dome
+\end{lstlisting}
+
+
+\subsubsection{Example plans}\label{app:JSON}
+The following JSON file will automatically open the dome at sunset, acquire sky flat calibration frames, focus the telescope, and then acquire a sequence of image. The dome will automatically close at midnight (or if the weather becomes unsafe), and the camera will automatically warm and power off once observations are complete.
+
+\begin{figure}
+    \centering
+    \lstinputlisting[language=json]{figures/example_plan1.json}
+    \caption{An example observing plan for obtaining a set of images in several filters.}
+    \label{fig:exampleplan1}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \lstinputlisting[language=json]{figures/example_plan2.json}
+    \caption{An example observing plan for obtaining auto-guided time-series images.}
+    \label{fig:exampleplan2}
+\end{figure}
+
+\clearpage
 \section{Technical Information}\label{app:technical}
+The following sections outline technical details for reference by trained observatory staff. Observers should not act on these instructions without first consulting an observatory staff member.
 
+\subsection{Software Overview}
 The observatory is controlled using the \href{https://github.com/rockit-astro}{Robotic Observatory Control Kit} software platform. Table \ref{tab:rockit-modules} provides a listing of the modules used.
 \begin{sidewaystable}
     \centering
-    \begin{tabular}{c|c|c|c}
-        Module & Purpose & Computer & \texttt{systemd} service name(s)  \\
+    \begin{tabular}{c|c|c}
+        Module & Purpose & \texttt{systemd} service name(s)  \\
         \hline
-        \href{https://github.com/rockit-astro/ashdomed}{\texttt{ashdomed}} & Dome control & DCS & \texttt{ashdomed@warwick}\\
-        \href{https://github.com/rockit-astro/atlasd}{\texttt{atlasd}} & Focus control & TCS & \texttt{focusd@warwick}\\
-        \href{https://github.com/rockit-astro/camd-qhy}{\texttt{camd-qhy}}, \href{https://github.com/rockit-astro/camd-client}{\texttt{camd-client}} & Camera control & TCS & \texttt{qhy\_camd@warwick}\\
-        \href{https://github.com/rockit-astro/cfwd}{\texttt{cfwd}} & Filter wheel control & TCS & \texttt{cfwd@warwick}\\
-        \href{https://github.com/rockit-astro/cloudwatcherd}{\texttt{cloudwatcherd}} & Sky temperature & TCS & \texttt{cloudwatcherd@warwick}\\
-        \href{https://github.com/rockit-astro/diskspaced}{\texttt{diskspaced}} & Disk space monitor & TCS & \texttt{diskspaced@warwick}\\
-        \href{https://github.com/rockit-astro/environmentd}{\texttt{environmentd}} & Environment aggregation & TCS & \texttt{environmentd@warwick}\\
-        \href{https://github.com/rockit-astro/ephemd}{\texttt{ephemd}} & Sun/moon information & TCS & \texttt{ephemd@warwick}\\
-        \href{https://github.com/rockit-astro/meaded}{\texttt{meaded}} & Telescope control & TCS & \texttt{meaded@warwick}\\
-        \href{https://github.com/rockit-astro/obslogd}{\texttt{obslogd}} & Dashboard log database & TCS & \texttt{obslogd@warwick}\\
-        \href{https://github.com/rockit-astro/opsd}{\texttt{opsd}} & Robotic operations control & TCS & \texttt{opsd@warwick}\\
-        \href{https://github.com/rockit-astro/pipelined}{\texttt{pipelined}} & Camera data pipeline & TCS & \texttt{pipelined@warwick}, \texttt{pipeline\_workerd@warwick}\\
-        \href{https://github.com/rockit-astro/powerd}{\texttt{powerd}} & Power control & TCS & \texttt{powerd@warwick}\\
-        \href{https://github.com/rockit-astro/rhusbd}{\texttt{rhusbd}} & Dome temp/humidity & DCS & \texttt{rhusbd@warwick}\\
-        \href{https://github.com/rockit-astro/vaisalad}{\texttt{vaisalad}} & Ext. weather & TCS & \texttt{vaisalad@warwick}\\
-        \href{https://github.com/rockit-astro/weatherlog}{\texttt{weatherlog}} & Dashboard weather database & TCS & \texttt{update-weather-database}\\
-        \href{https://github.com/rockit-astro/dashboard-warwick}{\texttt{dashboard-warwick}} & Web dashboard & TCS & \texttt{dashboard}\\
+        \href{https://github.com/rockit-astro/domed-ash}{\texttt{domed-ash}} & Dome control & \texttt{ash\_domed@warwick}\\
+        \href{https://github.com/rockit-astro/focusd-atlas}{\texttt{focusd-atlas}} & Focus control & \texttt{atlas\_focusd@warwick}\\
+        \href{https://github.com/rockit-astro/camd-qhy}{\texttt{camd-qhy}}, \href{https://github.com/rockit-astro/camd-client}{\texttt{camd-client}} & Camera control & \texttt{qhy\_camd@warwick}\\
+        \href{https://github.com/rockit-astro/filterwheeld-fli}{\texttt{filterwheeld-fli}} & Filter wheel control & \texttt{fli\_filterwheeld@warwick}\\
+        \href{https://github.com/rockit-astro/cloudwatcherd}{\texttt{cloudwatcherd}} & Sky temperature & \texttt{cloudwatcherd@warwick}\\
+        \href{https://github.com/rockit-astro/diskspaced}{\texttt{diskspaced}} & Disk space monitor & \texttt{diskspaced@warwick}\\
+        \href{https://github.com/rockit-astro/environmentd}{\texttt{environmentd}} & Environment aggregation & \texttt{environmentd@warwick}\\
+        \href{https://github.com/rockit-astro/ephemd}{\texttt{ephemd}} & Sun/moon information & \texttt{ephemd@warwick}\\
+        \href{https://github.com/rockit-astro/mountd-meade}{\texttt{mountd-meade}} & Telescope mount control & \texttt{meade\_mountd@warwick}\\
+        \href{https://github.com/rockit-astro/obslogd}{\texttt{obslogd}} & Dashboard log database & \texttt{obslogd@warwick}\\
+        \href{https://github.com/rockit-astro/opsd}{\texttt{opsd}} & Robotic operations control & \texttt{opsd@warwick}\\
+        \href{https://github.com/rockit-astro/pipelined}{\texttt{pipelined}} & Camera data pipeline & \texttt{pipelined@warwick}, \texttt{pipeline\_workerd@warwick}\\
+        \href{https://github.com/rockit-astro/powerd}{\texttt{powerd}} & Power control & \texttt{powerd@warwick}\\
+        \href{https://github.com/rockit-astro/shtstickd}{\texttt{shtstickd}} & Dome temp/humidity & \texttt{shtstickd@dome}\\
+        \href{https://github.com/rockit-astro/vaisalad}{\texttt{vaisalad}} & Ext. weather & \texttt{vaisalad@warwick}\\
+        \href{https://github.com/rockit-astro/weatherlog}{\texttt{weatherlog}} & Dashboard weather database & \texttt{update-weather-database}\\
+        \href{https://github.com/rockit-astro/dashboard-warwick}{\texttt{dashboard-warwick}} & Web dashboard & \texttt{dashboard}\\
     \end{tabular}
-    \caption{List of rockit modules used at Windmill Hill Observatory.}
+    \caption{List of rockit modules used at TMO.}
     \label{tab:rockit-modules}
 \end{sidewaystable}
 
@@ -379,6 +649,39 @@ Standard \texttt{systemd} commands work, for example to view the standard output
 journalctl -fu opsd@warwick --since "2023-09-18 01:00:00" --until "2023-09-18 03:30:00"
 \end{lstlisting}
 }
-TODO: software updates, systemd commands
+TODO: software updates, systemd commands, manual dome and power control (requires ops user), logging in and restarting skycam.
 
+\subsection{Re-zeroing telescope axes}\label{sec:zerotelescope}
+
+TODO: Expand wording and figures around the following procedure:
+\begin{itemize}
+    \item Manually move off the limit if security system was tripped
+    \item Make sure telescope has been initialised
+    \item Use hand panel to position telescope on zero markers
+    \item \texttt{tel zero} and wait for control to return to the terminal
+    \item \texttt{ops script run\_sync\_pointing} to restore pointing accuracy on sky
+\end{itemize}
+
+\subsection{Resetting handset configuration}
+
+Initialising the telescope may fail with a ``mount handset is not correctly configured'' error. This is a sign that the on-board memory has been corrupted, and that the telescope must be reconfigured manually using the hand-paddle.
+
+Start by pressing the MODE button until the display shows ``Select Item: Object``. You can then use the $\vartriangle$ and $\triangledown$ buttons to change menu items, ENTER to select, and MODE to return.
+
+Select the Setup menu and then change the following:
+
+\begin{itemize}
+   \item Settings: Daylight Saving: No (even if it is Daylight saving!)
+   \item Settings: Telescope\begin{itemize}
+        \item Mount: Polar
+    \end{itemize}
+    \item Settings: Site\begin{itemize}
+        \item Site: Edit \begin{itemize}
+            \item Edit: Name: WARWICK
+            \item Edit: Latitude: 52$^\circ$23$^\prime$N
+            \item Edit: Longitude: 001$^\circ$35$^\prime$WEST
+            \item Edit: Time Zone: +0 Hours (even if it is Daylight saving!)
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
 \end{document}

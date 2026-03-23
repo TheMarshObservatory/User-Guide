@@ -1,0 +1,35 @@
+{
+  "night": "2023-12-01",
+  "dome": {
+    "open": "auto",
+    "close": "2023-12-01T20:35:00Z"
+  },
+  "actions": [
+    {
+      "type": "SkyFlats",
+      "evening": true,
+      "pipeline": {
+        "prefix": "evening-flat"
+      }
+    },
+    {
+     "type": "ObserveTimeSeries",
+     "start": "2023-12-01T16:30:00",
+     "end": "2023-12-01T20:30:00",
+     "ra": 301.6033,
+     "dec": 44.5070,
+     "pipeline": {
+        "object": "KIC 8462852" ,
+        "prefix": "kic8462852"
+    },
+    "camera":{
+     "exposure":20,
+     "filter":"NONE",
+     "stream": false
+    }
+    },
+    {
+      "type": "ShutdownCamera"
+    }
+  ]
+}
