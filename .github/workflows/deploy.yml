@@ -25,16 +25,16 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v4
-	 - name: Compile Manual
+      - name: Compile Manual
         uses: xu-cheng/latex-action@v4
         with:
           root_file: main.tex
           texlive_version: 2025
-		  post_compile: 'mv main.pdf TMOUserGuide.pdf'
+          post_compile: 'mv main.pdf TMOUserGuide.pdf'
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'TMOUserGuide.pdf'
+          path: '.'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
